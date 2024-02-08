@@ -1,7 +1,7 @@
 #include <string>
 #include <algorithm>
 
-static std::string add(const std::string& a, const std::string& b) 
+std::string add(const std::string& a, const std::string& b) 
 {
 	std::string num1 = a;
 	std::string num2 = b;
