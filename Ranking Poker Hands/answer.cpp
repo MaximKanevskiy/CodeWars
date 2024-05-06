@@ -90,7 +90,14 @@ struct PokerHand
 		std::set<int> uniqueValues(values.begin(), values.end());
 
 		bool isFlush = uniqueSuits.size() == 1;
-		bool isStraight = checkIsIncreasingByOne(values) || (values == std::vector<int>{2, 3, 4, 5, 14});
+		bool isBasicStraight = values == std::vector<int>{2, 3, 4, 5, 14};
+
+		if (isBasicStraight)
+		{
+			sumOfValues -= (letterValues::ACE - 1);
+		}
+
+		bool isStraight = checkIsIncreasingByOne(values) || isBasicStraight;
 
 		if (isFlush && isStraight && values.back() == 14) return Rank::ROYAL_FLUSH;
 		if (isFlush && isStraight) return Rank::STRAIGHT_FLUSH;
@@ -194,83 +201,66 @@ void testPokerHands(const std::vector<std::tuple<std::string, std::string, Resul
 	}
 }
 
-int main(int argc, char* argv)
+int main()
 {
-	/*std::vector<std::pair<std::string, std::string>> testCases = {
-		{"3H 4C 4H 3S 2H", "6S 8S 7S 5H 9H"},
-		{"QC KH TS JS AH", "JH 8S TH AH QH"},
-		{"5S 5D 2C KH KH", "9D 8H 2C 6S 7H"},
-		{"8C 9C 5C 3C TC", "TC 8C 2S JH 6C"},
-		{"4C 5C 9C 8C KC", "KS 8D 4D 9S 4S"},
-		{"2D 6D 9D TH 7D", "AS 3C KH AD KH"},
-		{"3S 8S 9S 5S KS", "JH 8S TH AH QH"},
-		{"JH AH TH KH QH", "9D 8H 2C 6S 7H"},
-		{"QH 8H KD JH 8S", "5C 6C 3C 7C 4C"},
-		{"KC 4H KS 2H 8D", "JH 9H TH KH QH"},
-		{"3C 5C 4C 2C AH", "8C 4S KH JS 4D"},
-		{"TC 8C 2S JH 6C", "TC 8C 2S JH 6C"},
-		{"3D 2H 3H 2C 2D", "TS KS 5S 9S AC"},
-		{"2D 6D 9D TH 7D", "AS 3C KH AD KH"},
-		{"KC 4H KS 2H 8D", "JH 8S TH AH QH"},
-		{"2D 6D 3D 4D 5D", "AH 8S AS KC JH"},
-		{"4C 5C 9C 8C KC", "QH 8H KD JH 8S"},
-		{"TS KS 5S 9S AC", "2H 2C 3S 3H 3D"},
-		{"KC 4H KS 2H 8D", "KH KC 3S 3H 3D"},
-		{"6S 8S 7S 5H 9H", "JH 9H TH KH QH"},
-		{"4C 5C 9C 8C KC", "QC KH TS JS AH"},
-		{"TC 8C 2S JH 6C", "5S 5D 2C KH KH"},
-		{"7C 7S 3S 7H 5S", "KH KC 3S 3H 3D"},
-		{"TS KS 5S 9S AC", "3S 8S 9S 5S KS"},
-		{"7C 7S 3S 7H 5S", "3C KH 5D 5S KH"},
-		{"5S 5D 2C KH KH", "JH 9H TH KH QH"},
-		{"3H 4C 4H 3S 2H", "7C 7S 3S 7H 5S"},
-		{"2D 6D 9D TH 7D", "TC 8C 2S JH 6C"},
-		{"KD 4S KC 3H 8S", "JC 6H JS JD JH"},
-		{"AC KH QH AH AS", "KC 4H KS 2H 8D"},
-		{"5C 6C 3C 7C 4C", "3C KH 5D 5S KH"},
-		{"JS QS 9H TS KH", "QC KH TS JS AH"},
-		{"5S 5D 2C KH KH", "7C 7S 3S 7H 5S"},
-		{"JH 8S TH AH QH", "QC KH TS JS AH"},
-		{"JH 9H TH KH QH", "3S 8S 9S 5S KS"},
-		{"AH 8S AS KC JH", "3C KH 5D 5S KH"},
-		{"4S 3H 2C 7S 5H", "3C KH 5D 5S KH"},
-		{"3D 2H 3H 2C 2D", "7C 7S KH 2H 7H"},
-		{"2D 6D 3D 4D 5D", "JS QS 9H TS KH"},
-		{"JC 7H JS JD JH", "5S 5D 2C KH KH"},
-		{"JH 8H AH KH QH", "5C 6C 3C 7C 4C"},
-		{"AH 8S AS KC JH", "2D 6D 9D TH 7D"},
-		{"5S 5D 2C KH KH", "TC 8C 2S JH 6C"},
-		{"JC 7H JS JD JH", "3S 8S 9S 5S KS"},
-		{"2D 6D 3D 4D 5D", "3H 4C 4H 3S 2H"},
-		{"5C 6C 3C 7C 4C", "JC 7H JS JD JH"},
-		{"7C 7S 3S 7H 5S", "QH 8H KD JH 8S"},
-		{"KS 8D 4D 9S 4S", "KH KC 3S 3H 3D"},
-		{"AS 3C KH AD KH", "AH 8S AS KC JH"},
-		{"KD 6S 9D TH AD", "5S 5D 2C KH KH"},
-		{"4C 5C 9C 8C KC", "KS 8D 4D 9S 4S"},
-		{"3D 2H 3H 2C 2D", "JH 8H AH KH QH"},
-		{"KD 4S KC 3H 8S", "QH 8H KD JH 8S"},
-	};*/
-
 	std::vector<std::tuple<std::string, std::string, Result>> testCases = {
 		// Insert your test cases here
 		{"3H 4C 4H 3S 2H", "6S 8S 7S 5H 9H", Result::Loss},
 		{"QC KH TS JS AH", "JH 8S TH AH QH", Result::Win},
 		{"5S 5D 2C KH KH", "9D 8H 2C 6S 7H", Result::Win},
 		{"8C 9C 5C 3C TC", "TC 8C 2S JH 6C", Result::Win},
-		{"4C 5C 9C 8C KC", "KS 8D 4D 9S 4S", Result::},
-		{"2D 6D 9D TH 7D", "AS 3C KH AD KH"},
-		{"3S 8S 9S 5S KS", "JH 8S TH AH QH"},
-		{"JH AH TH KH QH", "9D 8H 2C 6S 7H"},
-		{"QH 8H KD JH 8S", "5C 6C 3C 7C 4C"},
-		{"KC 4H KS 2H 8D", "JH 9H TH KH QH"},
-		{"3C 5C 4C 2C AH", "8C 4S KH JS 4D"},
+		{"4C 5C 9C 8C KC", "KS 8D 4D 9S 4S", Result::Win},
+		{"2D 6D 9D TH 7D", "AS 3C KH AD KH", Result::Loss},
+		{"3S 8S 9S 5S KS", "JH 8S TH AH QH", Result::Win},
+		{"JH AH TH KH QH", "9D 8H 2C 6S 7H", Result::Win},
+		{"QH 8H KD JH 8S", "5C 6C 3C 7C 4C", Result::Loss},
+		{"KC 4H KS 2H 8D", "JH 9H TH KH QH", Result::Loss},
+		{"3C 5C 4C 2C AH", "8C 4S KH JS 4D", Result::Win},
+		{"TC 8C 2S JH 6C", "TC 8C 2S JH 6C", Result::Tie},
+		{"3D 2H 3H 2C 2D", "TS KS 5S 9S AC", Result::Win},
+		{"2D 6D 9D TH 7D", "AS 3C KH AD KH", Result::Loss},
+		{"KC 4H KS 2H 8D", "JH 8S TH AH QH", Result::Win},
+		{"2D 6D 3D 4D 5D", "AH 8S AS KC JH", Result::Win},
+		{"4C 5C 9C 8C KC", "QH 8H KD JH 8S", Result::Win},
+		{"TS KS 5S 9S AC", "2H 2C 3S 3H 3D", Result::Loss},
+		{"KC 4H KS 2H 8D", "KH KC 3S 3H 3D", Result::Loss},
+		{"6S 8S 7S 5H 9H", "JH 9H TH KH QH", Result::Loss},
+		{"4C 5C 9C 8C KC", "QC KH TS JS AH", Result::Win},
+		{"TC 8C 2S JH 6C", "5S 5D 2C KH KH", Result::Loss},
+		{"7C 7S 3S 7H 5S", "KH KC 3S 3H 3D", Result::Loss},
+		{"TS KS 5S 9S AC", "3S 8S 9S 5S KS", Result::Loss},
+		{"7C 7S 3S 7H 5S", "3C KH 5D 5S KH", Result::Win},
+		{"5S 5D 2C KH KH", "JH 9H TH KH QH", Result::Loss},
+		{"3H 4C 4H 3S 2H", "7C 7S 3S 7H 5S", Result::Loss},
+		{"2D 6D 9D TH 7D", "TC 8C 2S JH 6C", Result::Loss},
+		{"KD 4S KC 3H 8S", "JC 6H JS JD JH", Result::Loss},
+		{"AC KH QH AH AS", "KC 4H KS 2H 8D", Result::Win},
+		{"5C 6C 3C 7C 4C", "3C KH 5D 5S KH", Result::Win},
+		{"JS QS 9H TS KH", "QC KH TS JS AH", Result::Loss},
+		{"5S 5D 2C KH KH", "7C 7S 3S 7H 5S", Result::Loss},
+		{"JH 8S TH AH QH", "QC KH TS JS AH", Result::Loss},
+		{"JH 9H TH KH QH", "3S 8S 9S 5S KS", Result::Win},
+		{"AH 8S AS KC JH", "3C KH 5D 5S KH", Result::Loss},
+		{"4S 3H 2C 7S 5H", "3C KH 5D 5S KH", Result::Loss},
+		{"3D 2H 3H 2C 2D", "7C 7S KH 2H 7H", Result::Win},
+		{"2D 6D 3D 4D 5D", "JS QS 9H TS KH", Result::Win},
+		{"JC 7H JS JD JH", "5S 5D 2C KH KH", Result::Win},
+		{"JH 8H AH KH QH", "5C 6C 3C 7C 4C", Result::Loss},
+		{"AH 8S AS KC JH", "2D 6D 9D TH 7D", Result::Win},
+		{"5S 5D 2C KH KH", "TC 8C 2S JH 6C", Result::Win},
+		{"JC 7H JS JD JH", "3S 8S 9S 5S KS", Result::Win},
+		{"2D 6D 3D 4D 5D", "3H 4C 4H 3S 2H", Result::Win},
+		{"5C 6C 3C 7C 4C", "JC 7H JS JD JH", Result::Win},
+		{"7C 7S 3S 7H 5S", "QH 8H KD JH 8S", Result::Win},
+		{"KS 8D 4D 9S 4S", "KH KC 3S 3H 3D", Result::Loss},
+		{"AS 3C KH AD KH", "AH 8S AS KC JH", Result::Win},
+		{"KD 6S 9D TH AD", "5S 5D 2C KH KH", Result::Loss},
+		{"4C 5C 9C 8C KC", "KS 8D 4D 9S 4S", Result::Win},
+		{"3D 2H 3H 2C 2D", "JH 8H AH KH QH", Result::Win},
+		{"KD 4S KC 3H 8S", "QH 8H KD JH 8S", Result::Win},
 	};
 
-	/*PokerHand first = { "3H 4C 4H 3S 2H" };
-	PokerHand second = { "6S 8S 7S 5H 9H" };
-	std::cout << static_cast<int>(compare(first, second)) << std::endl;*/
-	// testPokerHands(testCases);
+	testPokerHands(testCases);
 
 	return 0;
 }
